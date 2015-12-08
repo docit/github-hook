@@ -19,7 +19,7 @@ return [
             ],
             'sync'       => [
                 'enabled'        => false,
-                'webhook_secret' => env('CODEX_PROJECT_GITHUB_WEBHOOK_SECRET', null),
+                'webhook_secret' => env('DOCIT_PROJECT_GITHUB_WEBHOOK_SECRET', null),
                 'sync'           => [
                     'branches' => [ 'master' ],
                     /**
