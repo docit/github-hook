@@ -53,12 +53,9 @@ class GithubController extends Controller
      * @param $type
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      */
-    public function webhook($type)
+    public function webhook()
     {
-        $types = [ 'push' ];
-        if (! in_array($type, $types, true)) {
-            return response('', 403);
-        }
+
         $headers = [
             'delivery'   => $this->request->header('x-github-delivery'),
             'event'      => $this->request->header('x-github-event'),
@@ -69,7 +66,7 @@ class GithubController extends Controller
         $repo    = strtolower($payload[ 'repository' ][ 'full_name' ]);
 
         foreach ($this->factory->getProjects() as $project) {
-            if (! $project->config('enable_github_hook', false) || $project->config('github_hook_settings.sync.enabled', false)) {
+            if ( $project->config('enable_github_hook', false) === false || $project->config('github_hook_settings.sync.enabled', false) === false ) {
                 continue;
             }
 
@@ -84,7 +81,7 @@ class GithubController extends Controller
 
 
             if ($headers[ 'signature' ] === "sha1=$hash") {
-                $this->queue->push(\Docit\Hooks\Github\Commands\GithubSyncProject::class, [ 'project' => $project ]);
+                $this->queue->push(\Docit\Hooks\Github\Commands\GithubSyncProject::class, [ 'project' => $project->getName() ]);
                 return response('', 200);
             } else {
                 return response('Invalid hash', 403);

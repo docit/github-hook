@@ -20,7 +20,6 @@ use Illuminate\Contracts\Queue\Job;
  */
 class GithubSyncProject
 {
-
     protected $factory;
 
     /**
@@ -33,7 +32,7 @@ class GithubSyncProject
 
     public function fire(Job $job, $data)
     {
-        if($job->attempts() > 5){
+        if($job->attempts() > 2){
             $job->delete();
         }
         $this->factory->getProject($data[ 'project' ])->githubSync()->syncAll();
